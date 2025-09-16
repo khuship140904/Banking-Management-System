@@ -1,3 +1,4 @@
+package src;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -40,14 +41,19 @@ public static void main(String[] args) throws ClassNotFoundException,SQLExceptio
                         break;
                     case 2:
                         email = user.login();
+                        while(!user.user_exists(email)){
+                            System.out.println("Incorrect Email or Password!\n");
+                            email=user.login();
+                            };
                         if (email!=null) {
                             System.out.println("USER HAS LOGGED IN!!!");
                             System.out.println();
-                            System.out.println("User Logged In!");
+                            
                             if(!accounts.account_exists(email)){
                                 System.out.println();
                                 System.out.println("1. Open a new Bank Account");
                                 System.out.println("2. Exit");
+
                                 if(scanner.nextInt() == 1) {
                                     account_number = accounts.openAccount(email);
                                     System.out.println("Account Created Successfully");
@@ -59,13 +65,14 @@ public static void main(String[] args) throws ClassNotFoundException,SQLExceptio
                             }
                             account_number = accounts.getAccount_number(email);
                             int choice2 = 0;
-                            while (choice2 != 5) {
+                            while (choice2 != 9) {
                                 System.out.println();
                                 System.out.println("1. Debit Money");
                                 System.out.println("2. Credit Money");
                                 System.out.println("3. Transfer Money");
                                 System.out.println("4. Check Balance");
-                                System.out.println("5. Log Out");
+                                System.out.println("5. Get history");
+                                System.out.println("6. log Out");
                                 System.out.println("Enter your choice: ");
                                 choice2 = scanner.nextInt();
                                 switch (choice2) {
@@ -82,7 +89,12 @@ public static void main(String[] args) throws ClassNotFoundException,SQLExceptio
                                         accountManager.getBalance(account_number);
                                         break;
                                     case 5:
+                                    user.get_history(email);
                                         break;
+                                        case 6:
+                                        System.out.println("THANK YOU FOR USING BANKING SYSTEM!!!");
+                                     System.out.println("Logging Out System!");
+                                    return;
                                     default:
                                         System.out.println("Enter Valid Choice!");
                                         break;
@@ -91,7 +103,7 @@ public static void main(String[] args) throws ClassNotFoundException,SQLExceptio
 
                         }
                         else{
-                            System.out.println("Incorrect Email or Password!");
+                            return;
                         }
                     case 3:
                         System.out.println("THANK YOU FOR USING BANKING SYSTEM!!!");

@@ -1,3 +1,4 @@
+package src;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,21 +16,40 @@ public class Accounts {
     }
 /*used for opening account in the bank */
     public long openAccount(String email){
+
         if (!account_exists(email)) {
         String open_account_query = "insert into Accounts(account_number,full_name,email,balance,security_pin) values (?,?,?,?,?)";
         scanner.nextLine();
-        System.out.print("enter fullname: ");
-        String full_name= scanner.nextLine();
+
+        String name = null;
+
+        try{
+            String query = "select full_name from user where email=?";
+            PreparedStatement ps = connection.prepareStatement(query);
+
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()){
+                name=rs.getString("full_name");
+            }
+
+
+        }catch(SQLException e){e.printStackTrace();}
+      
         System.out.print("enter Initial Amount: ");
         String balance = scanner.nextLine();
+      
         System.out.print("enter security pin: ");
         String security_pin= scanner.nextLine();
 
+        
         try {
             long account_number = generateAccountNumber();
             PreparedStatement preparedStatement=connection.prepareStatement(open_account_query);
             preparedStatement.setLong(1,account_number);
-            preparedStatement.setString(2,full_name);
+            preparedStatement.setString(2,name);
             preparedStatement.setString(3,email);
             preparedStatement.setString(4,balance);
             preparedStatement.setString(5,security_pin);
@@ -37,6 +57,9 @@ public class Accounts {
             int affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows>0) {
+                System.out.println("\n-------------------------------------------");
+                System.out.println("Your name = "+name );
+                System.out.println("Your Initial Balance = "+balance );
                 return account_number;
             } else{
                 throw new RuntimeException("account creation failed");
